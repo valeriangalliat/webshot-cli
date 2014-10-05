@@ -2,6 +2,9 @@
   "name": "webshot-cli",
   "version": "0.1.0",
 
+  "homepage": "https://github.com/valeriangalliat/webshot-cli",
+  "bugs": "https://github.com/valeriangalliat/webshot-cli/issues",
+
   "license": {
     "type": "Unlicense",
     "url": "http://unlicense.org/"
@@ -12,12 +15,14 @@
     "url": "http://val.codejam.info/"
   },
 
-  "homepage": "https://github.com/valeriangalliat/webshot-cli",
-  "bugs": "https://github.com/valeriangalliat/webshot-cli/issues",
 
   "repository": {
     "type": "git",
     "url": "https://github.com/valeriangalliat/webshot-cli.git"
+  },
+
+  "scripts": {
+    "test": "eslint webshot"
   },
 
   "dependencies": {
@@ -27,9 +32,5 @@
 
   "devDependencies": {
     "eslint": "0.*"
-  },
-
-  "scripts": {
-    "test": "eslint webshot"
   }
 }
