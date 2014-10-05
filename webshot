@@ -14,7 +14,8 @@ Options:
   --version                   Show version.
   --window-size=<size>        Browser window size [default: 1024/768].
   --shot-size=<size>          The area to capture [default: window/window].
-  --shot-offset=<offset>      Left, right, top and bottom offset [default: 0/0/0/0].
+  --shot-offset=<offset>      Left, right, top and bottom offset
+                              [default: 0/0/0/0].
   --phantom-path=<path>       The location of PhantomJS [default: phantomjs].
   --custom-header=<header>    Additional header (can be set multiple times).
   --default-white-background  White background if no background is set.
@@ -22,14 +23,16 @@ Options:
   --quality=<quality>         JPEG compression quality [default: 75].
   --stream-type=<type>        Streaming file type [default: png].
   --render-delay=<delay>      Number of milliseconds to wait [default: 0].
-  --timeout=<timeout>         Kill PhantomJS after this number of milliseconds [default: 0].
+  --timeout=<timeout>         Kill PhantomJS after this number of
+                              milliseconds [default: 0].
   --shot-callback             Wait for `window.callPhantom('takeShot');`.
   --http-error                Cause an error if HTTP status is not 200.
 
-See <https://github.com/brenden/node-webshot> for options details.
+See <https://github.com/brenden/node-webshot#options> for options
+details.
 
-All options beginning with `--p:` like `--p:cookies-path` are passed
-to PhantomJS. See <http://phantomjs.org/api/command-line.html>.
+All options beginning with `--p:` like `--p:cookies-path` are passed to
+PhantomJS. See <http://phantomjs.org/api/command-line.html>.
 */
 
 var fs = require('fs');
@@ -65,7 +68,9 @@ var options = {};
 
 options.windowSize = parseSize(args['--window-size']);
 options.shotSize = parseSize(args['--shot-size']);
-options.shotOffset = parseOffset(args['--shot-offset']);
+
+// TODO: the default value can be removed once docopt is fixed
+options.shotOffset = parseOffset(args['--shot-offset'] || '0/0/0/0');
 
 if (args['--phantom-path'] !== 'phantomjs') {
   options.phantomPath = args['--phantom-path'];
