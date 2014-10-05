@@ -41,8 +41,32 @@ All options beginning with `--p:` like `--p:cookies-path` are passed
 to PhantomJS. See <http://phantomjs.org/api/command-line.html>.
 ```
 
+The main difference with the Webshot library is you don't have to give
+an absolute `file://` URL to capture a local file with working assets.
+The software will resolve it for you.
+
+Examples
+--------
+
+Standard I/O screenshot:
+
+```sh
+webshot < example.html > example.png
+webshot --quality=100 --stream-type=jpeg < example.html > example.jpeg
+```
+
+Shot an URL:
+
+```sh
+webshot example.html example.png
+webshot 'https://www.npmjs.org/' npmjs.png
+```
+
+For `example.html`, the difference with the I/O version is the relative
+assets will be loaded properly.
+
 Bugs
-====
+----
 
 * The `--custom-header` option can't be set multiple times because of a
   [docopt bug](https://github.com/docopt/docopt.coffee/pull/8).
