@@ -1,0 +1,203 @@
+#!/usr/bin/env node
+
+'use strict';
+
+/*
+Usage: webshot [--custom-header=<header>]... [options] [<url>] [<dest>]
+
+Arguments:
+  <url>   A webpage URL (can be a local file) [default: -].
+  <dest>  Where to save the image [default: -].
+
+Options:
+  -h, --help                  Show this help.
+  --version                   Show version.
+  --window-size=<size>        Browser window size [default: 1024/768].
+  --shot-size=<size>          The area to capture [default: window/window].
+  --shot-offset=<offset>      Left, right, top and bottom offset [default: 0/0/0/0].
+  --phantom-path=<path>       The location of PhantomJS [default: phantomjs].
+  --custom-header=<header>    Additional header (can be set multiple times).
+  --default-white-background  White background if no background is set.
+  --custom-css=<css>          Custom CSS rules.
+  --quality=<quality>         JPEG compression quality [default: 75].
+  --stream-type=<type>        Streaming file type [default: png].
+  --render-delay=<delay>      Number of milliseconds to wait [default: 0].
+  --timeout=<timeout>         Kill PhantomJS after this number of milliseconds [default: 0].
+  --shot-callback             Wait for `window.callPhantom('takeShot');`.
+  --http-error                Cause an error if HTTP status is not 200.
+
+See <https://github.com/brenden/node-webshot> for options details.
+
+All options beginning with `--p:` like `--p:cookies-path` are passed
+to PhantomJS. See <http://phantomjs.org/api/command-line.html>.
+*/
+
+var fs = require('fs');
+var path = require('path');
+
+var docopt = require('fdocopt')();
+var webshot = require('webshot');
+
+var phantomConfig = [];
+
+/**
+ * Remove options prefiwed with `--p:` and fill `phantomConfig`.
+ */
+var argv = process.argv.slice(2).filter(function (arg) {
+  if (arg.indexOf('--p:') !== 0) {
+    return true;
+  }
+
+  var parts = arg.split('=');
+  phantomConfig[parts[0].substr(4)] = parts[1];
+  return false;
+});
+
+var args = docopt(__filename, {
+  argv: argv,
+  version: require('./package.json').version
+});
+
+var url = args['<url>'] || '-';
+var dest = args['<dest>'] || '-';
+
+var options = {};
+
+options.windowSize = parseSize(args['--window-size']);
+options.shotSize = parseSize(args['--shot-size']);
+options.shotOffset = parseOffset(args['--shot-offset']);
+
+if (args['--phantom-path'] !== 'phantomjs') {
+  options.phantomPath = args['--phantom-path'];
+}
+
+options.phantomConfig = phantomConfig;
+
+if (typeof args['--custom-header'] !== 'array') {
+  // TODO: this fallback won't be needed once docopt is fixed
+
+  if (args['--custom-header']) {
+    args['--custom-header'] = [args['--custom-header']];
+  } else {
+    args['--custom-header'] = [];
+  }
+}
+
+options.customHeaders = parseHeaders(args['--custom-header']);
+options.defaultWhiteBackground = args['--default-white-background'];
+
+if (args['--custom-css']) {
+  options.customCSS = args['--custom-css'];
+}
+
+options.quality = args['--quality'] | 0;
+options.streamType = args['--stream-type'];
+options.renderDelay = args['--render-delay'] | 0;
+options.timeout = args['--timeout'] | 0;
+options.takeShotOnCallback = args['--shot-callback'];
+options.errorIfStatusIsNot200 = args['--http-error'];
+
+handleUrl(url, function (url, type) {
+  options.siteType = type;
+
+  if (dest !== '-') {
+    webshot(url, dest, options, end);
+    return;
+  }
+
+  webshot(url, options, function (err, fd) {
+    if (err) {
+      end(err);
+      return;
+    }
+
+    fd.pipe(process.stdout);
+  });
+});
+
+/**
+ * Handle potential error.
+ */
+function end(err) {
+  if (err) {
+    console.error(err);
+  }
+}
+
+function parseSize(size) {
+  var parts = size.split('/');
+
+  if (parts.length !== 2) {
+    throw new Error('Invalid size (`width/height`): ' + size);
+  }
+
+  return {width: parts[0], height: parts[1]};
+}
+
+function parseOffset(offset) {
+  var parts = offset.split('/');
+
+  if (parts.length !== 4) {
+    throw new Error('Invalid offset (`left/right/top/bottom`): ' + offset);
+  }
+
+  return {left: parts[0], right: parts[1], top: parts[2], bottom: parts[3]};
+}
+
+function parseHeaders(headers) {
+  var object = {};
+
+  headers.forEach(function (header) {
+    var parts = header.split(':', 2);
+
+    if (parts.length !== 2) {
+      throw new Error('Invalid header: ' + header);
+    }
+
+    object[parts[0].trim()] = parts[1].trim();
+  });
+
+  return object;
+}
+
+/**
+ * If the URL is `-`, read stdin and set the type to `html`.
+ *
+ * If the URL resolves to a local file, compute the absolute `file://`
+ * URL.
+ *
+ * Otherwise, pass it as is.
+ */
+function handleUrl(url, cb) {
+  if (url === '-') {
+    cat(process.stdin, function (buffer) {
+      cb(buffer, 'html');
+    });
+
+    return;
+  }
+
+  fs.exists(url, function (exists) {
+    if (!exists) {
+      cb(url, 'url');
+      return;
+    }
+
+    cb('file://' + path.resolve(url), 'url');
+  });
+}
+
+/**
+ * Read a stream into a string.
+ */
+function cat(fd, cb) {
+  var buffer = '';
+
+  fd.on('data', function (data) {
+    buffer += data;
+  });
+
+  fd.on('end', function () {
+    cb(buffer);
+  });
+}

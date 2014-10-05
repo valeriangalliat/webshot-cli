@@ -1,0 +1,30 @@
+{
+  "name": "webshot-cli",
+  "version": "0.1.0",
+
+  "author": {
+    "name": "Valérian Galliat",
+    "url": "http://val.codejam.info/"
+  },
+
+  "homepage": "https://github.com/valeriangalliat/webshot-cli",
+  "bugs": "https://github.com/valeriangalliat/webshot-cli/issues",
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/valeriangalliat/webshot-cli.git"
+  },
+
+  "dependencies": {
+    "fdocopt": "0.*",
+    "webshot": "0.*"
+  },
+
+  "devDependencies": {
+    "eslint": "0.*"
+  },
+
+  "scripts": {
+    "test": "eslint webshot"
+  }
+}
