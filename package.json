@@ -15,6 +15,9 @@
     "url": "http://val.codejam.info/"
   },
 
+  "bin": {
+    "webshot": "webshot"
+  },
 
   "repository": {
     "type": "git",
