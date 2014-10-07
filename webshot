@@ -77,17 +77,6 @@ if (args['--phantom-path'] !== 'phantomjs') {
 }
 
 options.phantomConfig = phantomConfig;
-
-if (typeof args['--custom-header'] !== 'array') {
-  // TODO: this fallback won't be needed once docopt is fixed
-
-  if (args['--custom-header']) {
-    args['--custom-header'] = [args['--custom-header']];
-  } else {
-    args['--custom-header'] = [];
-  }
-}
-
 options.customHeaders = parseHeaders(args['--custom-header']);
 options.defaultWhiteBackground = args['--default-white-background'];
 
