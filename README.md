@@ -1,5 +1,4 @@
-Webshot CLI
-===========
+# Webshot CLI [![npm version](http://img.shields.io/npm/v/webshot-cli.svg?style=flat-square)](https://www.npmjs.org/package/webshot-cli)
 
 > Easy website screenshots in CLI.
 
