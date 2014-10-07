@@ -68,12 +68,6 @@ assets will be loaded properly.
 Bugs
 ----
 
-* The `--custom-header` option can't be set multiple times because of a
-  [docopt bug](https://github.com/docopt/docopt.coffee/pull/8).
-  Currently, I've written a fallback where the last `--custom-header` is
-  set. With a patched docopt version, the multiple headers are working
-  properly.
-
 * When proxying an option to PhantomJS with `--p:` prefix, if it's an
   unknown option for PhantomJS, PhantomJS will crash but no error is
   returned. I believe it's more a bug with Webshot (or maybe PhantomJS
