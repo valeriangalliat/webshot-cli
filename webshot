@@ -27,6 +27,7 @@ Options:
                               milliseconds [default: 0].
   --shot-callback             Wait for `window.callPhantom('takeShot');`.
   --http-error                Cause an error if HTTP status is not 200.
+  --zoom=<zoom>               Zoom factor [default: 1].
 
 See <https://github.com/brenden/node-webshot#options> for options
 details.
@@ -90,6 +91,7 @@ options.renderDelay = args['--render-delay'] | 0;
 options.timeout = args['--timeout'] | 0;
 options.takeShotOnCallback = args['--shot-callback'];
 options.errorIfStatusIsNot200 = args['--http-error'];
+options.zoomFactor = args['--zoom'];
 
 handleUrl(url, function (url, type) {
   options.siteType = type;
