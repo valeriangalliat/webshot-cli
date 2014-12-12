@@ -2,8 +2,8 @@
 
 > Easy website screenshots in CLI.
 
-Overview
---------
+Description
+-----------
 
 This software is a wrapper around the [Webshot library], providing a
 simple command to take local or remote webpage screenshots.
