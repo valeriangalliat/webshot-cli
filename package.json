@@ -5,10 +5,7 @@
   "homepage": "https://github.com/valeriangalliat/webshot-cli",
   "bugs": "https://github.com/valeriangalliat/webshot-cli/issues",
 
-  "license": {
-    "type": "Unlicense",
-    "url": "http://unlicense.org/"
-  },
+  "license": "Unlicense",
 
   "author": {
     "name": "Valérian Galliat",
