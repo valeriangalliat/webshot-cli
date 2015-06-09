@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-'use strict';
-
 /*
 Usage: webshot [--custom-header=<header>]... [options] [<url>] [<dest>]
 
@@ -36,124 +34,124 @@ All options beginning with `--p:` like `--p:cookies-path` are passed to
 PhantomJS. See <http://phantomjs.org/api/command-line.html>.
 */
 
-var fs = require('fs');
-var path = require('path');
+var fs = require('fs')
+var path = require('path')
 
-var docopt = require('fdocopt')();
-var webshot = require('webshot');
+var docopt = require('fdocopt')()
+var webshot = require('webshot')
 
-var phantomConfig = [];
+var phantomConfig = []
 
 /**
  * Remove options prefiwed with `--p:` and fill `phantomConfig`.
  */
 var argv = process.argv.slice(2).filter(function (arg) {
   if (arg.indexOf('--p:') !== 0) {
-    return true;
+    return true
   }
 
-  var parts = arg.split('=');
-  phantomConfig[parts[0].substr(4)] = parts[1];
-  return false;
-});
+  var parts = arg.split('=')
+  phantomConfig[parts[0].substr(4)] = parts[1]
+  return false
+})
 
 var args = docopt(__filename, {
   argv: argv,
   version: require('./package.json').version
-});
+})
 
-var url = args['<url>'] || '-';
-var dest = args['<dest>'] || '-';
+var url = args['<url>'] || '-'
+var dest = args['<dest>'] || '-'
 
-var options = {};
+var options = {}
 
-options.windowSize = parseSize(args['--window-size']);
-options.shotSize = parseSize(args['--shot-size']);
+options.windowSize = parseSize(args['--window-size'])
+options.shotSize = parseSize(args['--shot-size'])
 
 // TODO: the default value can be removed once docopt is fixed
-options.shotOffset = parseOffset(args['--shot-offset'] || '0/0/0/0');
+options.shotOffset = parseOffset(args['--shot-offset'] || '0/0/0/0')
 
 if (args['--phantom-path'] !== 'phantomjs') {
-  options.phantomPath = args['--phantom-path'];
+  options.phantomPath = args['--phantom-path']
 }
 
-options.phantomConfig = phantomConfig;
-options.customHeaders = parseHeaders(args['--custom-header']);
-options.defaultWhiteBackground = args['--default-white-background'];
+options.phantomConfig = phantomConfig
+options.customHeaders = parseHeaders(args['--custom-header'])
+options.defaultWhiteBackground = args['--default-white-background']
 
 if (args['--custom-css']) {
-  options.customCSS = args['--custom-css'];
+  options.customCSS = args['--custom-css']
 }
 
-options.quality = args['--quality'] | 0;
-options.streamType = args['--stream-type'];
-options.renderDelay = args['--render-delay'] | 0;
-options.timeout = args['--timeout'] | 0;
-options.takeShotOnCallback = args['--shot-callback'];
-options.errorIfStatusIsNot200 = args['--http-error'];
-options.zoomFactor = args['--zoom'];
+options.quality = args['--quality'] | 0
+options.streamType = args['--stream-type']
+options.renderDelay = args['--render-delay'] | 0
+options.timeout = args['--timeout'] | 0
+options.takeShotOnCallback = args['--shot-callback']
+options.errorIfStatusIsNot200 = args['--http-error']
+options.zoomFactor = args['--zoom']
 
 handleUrl(url, function (url, type) {
-  options.siteType = type;
+  options.siteType = type
 
   if (dest !== '-') {
-    webshot(url, dest, options, end);
-    return;
+    webshot(url, dest, options, end)
+    return
   }
 
   webshot(url, options, function (err, fd) {
     if (err) {
-      end(err);
-      return;
+      end(err)
+      return
     }
 
-    fd.pipe(process.stdout);
-  });
-});
+    fd.pipe(process.stdout)
+  })
+})
 
 /**
  * Handle potential error.
  */
-function end(err) {
+function end (err) {
   if (err) {
-    console.error(err);
+    console.error(err)
   }
 }
 
-function parseSize(size) {
-  var parts = size.split('/');
+function parseSize (size) {
+  var parts = size.split('/')
 
   if (parts.length !== 2) {
-    throw new Error('Invalid size (`width/height`): ' + size);
+    throw new Error('Invalid size (`width/height`): ' + size)
   }
 
-  return {width: parts[0], height: parts[1]};
+  return {width: parts[0], height: parts[1]}
 }
 
-function parseOffset(offset) {
-  var parts = offset.split('/');
+function parseOffset (offset) {
+  var parts = offset.split('/')
 
   if (parts.length !== 4) {
-    throw new Error('Invalid offset (`left/right/top/bottom`): ' + offset);
+    throw new Error('Invalid offset (`left/right/top/bottom`): ' + offset)
   }
 
-  return {left: parts[0], right: parts[1], top: parts[2], bottom: parts[3]};
+  return {left: parts[0], right: parts[1], top: parts[2], bottom: parts[3]}
 }
 
-function parseHeaders(headers) {
-  var object = {};
+function parseHeaders (headers) {
+  var object = {}
 
   headers.forEach(function (header) {
-    var parts = header.split(':', 2);
+    var parts = header.split(':', 2)
 
     if (parts.length !== 2) {
-      throw new Error('Invalid header: ' + header);
+      throw new Error('Invalid header: ' + header)
     }
 
-    object[parts[0].trim()] = parts[1].trim();
-  });
+    object[parts[0].trim()] = parts[1].trim()
+  })
 
-  return object;
+  return object
 }
 
 /**
@@ -164,36 +162,36 @@ function parseHeaders(headers) {
  *
  * Otherwise, pass it as is.
  */
-function handleUrl(url, cb) {
+function handleUrl (url, cb) {
   if (url === '-') {
     cat(process.stdin, function (buffer) {
-      cb(buffer, 'html');
-    });
+      cb(buffer, 'html')
+    })
 
-    return;
+    return
   }
 
   fs.exists(url, function (exists) {
     if (!exists) {
-      cb(url, 'url');
-      return;
+      cb(url, 'url')
+      return
     }
 
-    cb('file://' + path.resolve(url), 'url');
-  });
+    cb('file://' + path.resolve(url), 'url')
+  })
 }
 
 /**
  * Read a stream into a string.
  */
-function cat(fd, cb) {
-  var buffer = '';
+function cat (fd, cb) {
+  var buffer = ''
 
   fd.on('data', function (data) {
-    buffer += data;
-  });
+    buffer += data
+  })
 
   fd.on('end', function () {
-    cb(buffer);
-  });
+    cb(buffer)
+  })
 }

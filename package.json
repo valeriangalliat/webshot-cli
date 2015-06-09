@@ -16,13 +16,13 @@
     "url": "https://github.com/valeriangalliat/webshot-cli.git"
   },
   "scripts": {
-    "test": "eslint webshot"
+    "test": "standard webshot"
   },
   "dependencies": {
     "fdocopt": "0.*",
     "webshot": "0.*"
   },
   "devDependencies": {
-    "eslint": "0.*"
+    "standard": "^4.0.1"
   }
 }
