@@ -115,6 +115,7 @@ handleUrl(url, function (url, type) {
 function end (err) {
   if (err) {
     console.error(err)
+    process.exit(1)
   }
 }
 
